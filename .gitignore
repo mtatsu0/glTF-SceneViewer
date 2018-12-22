@@ -1,9 +1,9 @@
 # glTF-SceneViewer
 build/
 glfw-3.2.1/
-KHR/
-glad/
-glad.c
+#KHR/
+#glad/
+#glad.c
 
 # Editor temporaries
 *~
