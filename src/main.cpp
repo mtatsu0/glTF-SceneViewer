@@ -1,17 +1,12 @@
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include <iostream>
 #include <stdio.h>
 
+#include "System.h"
+/*
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+*/
 
-static void glfw_error_callback(int error, const char* description)
-{
-  fprintf(stderr, "GLFW error %d: %s\n", error, description);
-}
 
 /*
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -22,45 +17,12 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-  glfwSetErrorCallback(glfw_error_callback);
   
-  if(!glfwInit())
-    return 1;
-
-  const char* glsl_version = "#version 330 core";
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  GLFWwindow* window = glfwCreateWindow(1280, 720, "glTF-SceneViewer", NULL, NULL);
-  if(window == NULL)
-    return 1;
-
-  glfwMakeContextCurrent(window);
-  glfwSwapInterval(1); // Enable vsync
-  
-  // Initialize OpenGL loader
-  gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
-  // glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-  // Setup Dear ImGui context
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-  // Setup Dear ImGui style
-  ImGui::StyleColorsDark();
-
-  // Setup Platform/Renderer bindings
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init(glsl_version);
-
   bool show_demo_window = true;
   bool show_another_window = false;
   ImVec4 clear_color = ImVec4(0.00f, 0.80f, 0.50f, 1.00f);
   
-  while(!glfwWindowShouldClose(window)) {
+  while(!glfwWindowShouldClose(System::Instance().window)) {
     glfwPollEvents();
 
     // Start the Dear ImGui frame
@@ -113,24 +75,19 @@ int main()
     // Rendering
     ImGui::Render();
     int display_w, display_h;
-    glfwMakeContextCurrent(window);
-    glfwGetFramebufferSize(window, &display_w, &display_h);
+    glfwMakeContextCurrent(System::Instance().window);
+    glfwGetFramebufferSize(System::Instance().window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    glfwMakeContextCurrent(window);
-    glfwSwapBuffers(window);
+    glfwMakeContextCurrent(System::Instance().window);
+    glfwSwapBuffers(System::Instance().window);
   }
   
   //Cleanup
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
   
-  glfwDestroyWindow(window);
-  glfwTerminate();
   return 0;
 }
 
