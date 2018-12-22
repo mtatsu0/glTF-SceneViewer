@@ -9,6 +9,7 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+# change version to your downloaded glfw version
 add_subdirectory(./glfw-3.2.1)
 
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
