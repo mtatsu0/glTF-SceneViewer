@@ -31,6 +31,7 @@ int main()
     ImGui::NewFrame();
     
     // 1. Show the big demo window
+    // ImGui::ShowDemoWindow() is in imgui_demo.cpp
     if (show_demo_window)
       ImGui::ShowDemoWindow(&show_demo_window);
 
@@ -61,7 +62,7 @@ int main()
       ImGui::End();
       
     }
-
+    
     // 3. Show another simple window.
     if (show_another_window)
     {
@@ -72,6 +73,51 @@ int main()
       ImGui::End();
     }
 
+    // 4. Show a simple window that display files.
+    {
+      boost::filesystem::path p(".");
+            
+      ImGui::Begin("mywindow");
+
+      if (boost::filesystem::exists(p))
+	{
+	  if (boost::filesystem::is_directory(p))
+	    {
+	      std::vector<boost::filesystem::path> v;
+
+	      for (auto&& x : boost::filesystem::directory_iterator(p))
+		v.push_back(x.path());
+
+	      std::sort(v.begin(), v.end());
+
+	      for (auto&& x : v){
+		if (boost::filesystem::is_directory(x.filename()))
+		  {
+		    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), x.filename().c_str());
+		  }
+		else
+		  {
+		    ImGui::Text(x.filename().c_str());
+		  }
+	      }
+		
+	    }
+	  else {
+	    ImGui::Text("not a directory");
+	  }
+	}
+      else {
+	for (int i = 0; i < 3; i++)
+	{
+	  ImGui::Text("hey");
+	}
+      }
+      
+      
+      ImGui::End();
+      
+    }
+    
     // Rendering
     ImGui::Render();
     int display_w, display_h;

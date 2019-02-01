@@ -7,6 +7,10 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <vector>
+#include <algorithm>
+
+#include <boost/filesystem.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

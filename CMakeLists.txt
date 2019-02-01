@@ -4,6 +4,8 @@ project (viewer)
 set (CMAKE_CXX_STANDARD 11)
 
 include_directories(./include)
+# for boost
+# link_directories(/usr/local/lib)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -26,3 +28,6 @@ add_executable(viewer
 )
 
 target_link_libraries(viewer glfw)
+target_link_libraries(viewer boost_system)
+target_link_libraries(viewer boost_filesystem)
+
