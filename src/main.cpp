@@ -75,29 +75,35 @@ int main()
 
     // 4. Show a simple window that display files.
     {
-      boost::filesystem::path p(".");
-            
+      static boost::filesystem::path p(".");
+      
       ImGui::Begin("mywindow");
 
       if (boost::filesystem::exists(p))
 	{
 	  if (boost::filesystem::is_directory(p))
-	    {
-	      std::vector<boost::filesystem::path> v;
+	    {	
+	      std::vector<boost::filesystem::path> files;
 
-	      for (auto&& x : boost::filesystem::directory_iterator(p))
-		v.push_back(x.path());
+	      for (auto&& entry : boost::filesystem::directory_iterator(p))
+		files.push_back(entry.path());
 
-	      std::sort(v.begin(), v.end());
+	      std::sort(files.begin(), files.end());
 
-	      for (auto&& x : v){
-		if (boost::filesystem::is_directory(x.filename()))
-		  {
-		    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), x.filename().c_str());
+	      for (auto&& file : files){
+		if (boost::filesystem::is_directory(file))
+		  {		    
+		    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), file.filename().c_str());
+		    
+		    // change directory
+		    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+		      {
+			p = file;
+		      }
 		  }
 		else
 		  {
-		    ImGui::Text(x.filename().c_str());
+		    ImGui::Text(file.filename().c_str());
 		  }
 	      }
 		
@@ -112,10 +118,8 @@ int main()
 	  ImGui::Text("hey");
 	}
       }
-      
-      
+                
       ImGui::End();
-      
     }
     
     // Rendering
