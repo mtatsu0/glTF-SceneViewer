@@ -75,10 +75,39 @@ int main()
 
     // 4. Show a simple window that display files.
     {
+      // current directory path
       static boost::filesystem::path p(".");
-      
+      // path history
+      static std::vector<boost::filesystem::path> pHisUndo{p};
+      static std::vector<boost::filesystem::path> pHisRedo;
+            
+      // create window
       ImGui::Begin("mywindow");
 
+      // Buttons for traverse directory.
+      float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+      ImGui::PushButtonRepeat(true);
+      // Undo
+      if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+	{
+	  if(pHisUndo.size() > 1){
+	    pHisRedo.push_back(pHisUndo.back());
+	    pHisUndo.pop_back();
+	    p = pHisUndo.back();
+	  }
+      }
+      ImGui::SameLine(0.0f, spacing);
+      // Redo
+      if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+	{
+	  if(pHisRedo.size() > 0){
+	    pHisUndo.push_back(pHisRedo.back());
+	    pHisRedo.pop_back();
+	    p = pHisUndo.back();
+	  }
+      }
+      ImGui::PopButtonRepeat();
+      
       if (boost::filesystem::exists(p))
 	{
 	  if (boost::filesystem::is_directory(p))
@@ -90,20 +119,36 @@ int main()
 
 	      std::sort(files.begin(), files.end());
 
+	      static boost::filesystem::path selectedFile(""); // selected file(not a directory) would be highlighted
 	      for (auto&& file : files){
+		
 		if (boost::filesystem::is_directory(file))
-		  {		    
-		    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), file.filename().c_str());
-		    
+		  {
+		    // directory has colored text
+		    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+		    ImGui::Selectable(file.filename().c_str());
+		    ImGui::PopStyleColor();
 		    // change directory
 		    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 		      {
+			// clear pathHistoryRedo
+			pHisRedo.clear();
+			pHisRedo.shrink_to_fit();
+			// change current directory
 			p = file;
+			pHisUndo.push_back(file);
 		      }
 		  }
 		else
 		  {
-		    ImGui::Text(file.filename().c_str());
+		    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+		    if(ImGui::Selectable(file.filename().c_str(), selectedFile==file))
+		      {
+			// selected file would be highlighted.
+			std::cout << file.filename().c_str() << std::endl;
+			selectedFile = file;
+		      }
+		    ImGui::PopStyleColor();
 		  }
 	      }
 		
