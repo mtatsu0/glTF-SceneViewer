@@ -80,7 +80,9 @@ int main()
       // path history
       static std::vector<boost::filesystem::path> pHisUndo{p};
       static std::vector<boost::filesystem::path> pHisRedo;
-            
+      // selected file(not a directory) would be highlighted
+      static boost::filesystem::path selectedFile("");
+      
       // create window
       ImGui::Begin("mywindow");
 
@@ -91,6 +93,7 @@ int main()
       if (ImGui::ArrowButton("##left", ImGuiDir_Left))
 	{
 	  if(pHisUndo.size() > 1){
+	    selectedFile.clear();
 	    pHisRedo.push_back(pHisUndo.back());
 	    pHisUndo.pop_back();
 	    p = pHisUndo.back();
@@ -101,13 +104,20 @@ int main()
       if (ImGui::ArrowButton("##right", ImGuiDir_Right))
 	{
 	  if(pHisRedo.size() > 0){
+	    selectedFile.clear();
 	    pHisUndo.push_back(pHisRedo.back());
 	    pHisRedo.pop_back();
 	    p = pHisUndo.back();
 	  }
       }
       ImGui::PopButtonRepeat();
-      
+      ImGui::SameLine(0.0f, spacing);
+      boost::filesystem::path tmp_p = p;
+      ImGui::Text(boost::filesystem::canonical(tmp_p/=selectedFile.filename()).c_str());
+
+      // Child Window
+      ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
+      ImGui::BeginChild("Child1", ImVec2(ImGui::GetWindowContentRegionWidth(), 200), false, window_flags);
       if (boost::filesystem::exists(p))
 	{
 	  if (boost::filesystem::is_directory(p))
@@ -119,7 +129,7 @@ int main()
 
 	      std::sort(files.begin(), files.end());
 
-	      static boost::filesystem::path selectedFile(""); // selected file(not a directory) would be highlighted
+	      
 	      for (auto&& file : files){
 		
 		if (boost::filesystem::is_directory(file))
@@ -131,6 +141,7 @@ int main()
 		    // change directory
 		    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 		      {
+			selectedFile.clear();
 			// clear pathHistoryRedo
 			pHisRedo.clear();
 			pHisRedo.shrink_to_fit();
@@ -163,7 +174,9 @@ int main()
 	  ImGui::Text("hey");
 	}
       }
-                
+      
+      ImGui::EndChild();
+
       ImGui::End();
     }
     
