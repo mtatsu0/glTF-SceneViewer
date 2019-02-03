@@ -112,10 +112,22 @@ int main()
       }
       ImGui::PopButtonRepeat();
       ImGui::SameLine(0.0f, spacing);
+            
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
       boost::filesystem::path tmp_p = p;
-      ImGui::Text(boost::filesystem::canonical(tmp_p/=selectedFile.filename()).c_str());
-
+      boost::filesystem::path slash("/");
+      ImGui::Text((boost::filesystem::canonical(tmp_p)/=slash).make_preferred().c_str());		    
+      ImGui::PopStyleColor();
+      
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+      ImGui::Button("File Open");
+      ImGui::SameLine();
+      ImGui::Text(selectedFile.filename().c_str());
+      ImGui::PopStyleColor();
+      
+      
       // Child Window
+      ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255,255,255,20));
       ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
       ImGui::BeginChild("Child1", ImVec2(ImGui::GetWindowContentRegionWidth(), 200), false, window_flags);
       if (boost::filesystem::exists(p))
@@ -156,7 +168,6 @@ int main()
 		    if(ImGui::Selectable(file.filename().c_str(), selectedFile==file))
 		      {
 			// selected file would be highlighted.
-			std::cout << file.filename().c_str() << std::endl;
 			selectedFile = file;
 		      }
 		    ImGui::PopStyleColor();
@@ -176,7 +187,8 @@ int main()
       }
       
       ImGui::EndChild();
-
+      ImGui::PopStyleColor();
+      
       ImGui::End();
     }
     
